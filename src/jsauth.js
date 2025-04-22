@@ -1,4 +1,4 @@
-module.export = function validate (accessToken) {
+export default function validate (accessToken) {
     // Parse token and get user object
 const ISSUER_KEY =  'iss';
 const ISSUER_VALUE =  'https://lab.shinova.in/';
@@ -109,3 +109,4 @@ var user = {
 
 return user;
 }
+
