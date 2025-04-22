@@ -1,11 +1,12 @@
 {
   "name": "jsauth",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "src/jsauth.js",
-  "browser": "src/jsauth.js",
-  "module": "src/jsauth.js",
-  "dependencies": {
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "devDependencies": {
-  }
+  "keywords": ["jsauth"],
+  "author": "Ashokkumar T.A",
+  "license": "ISC",
+  "description": "Enfore simple access control for react application"
 }
