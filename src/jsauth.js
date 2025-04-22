@@ -61,17 +61,17 @@ var user = {
         return this._allowed_data;
     },
     allowedPages: function(){
-        var pages = this._allowed_actions.map(function (perm_code) {
+        const pages = this._allowed_actions.map(function (perm_code) {
             return perm_code.substring(0, perm_code.lastIndexOf("-"));      
         });
-        upages = [...new Set(pages)];
+        const upages = [...new Set(pages)];
         return upages;
     },
     allowedModules: function(){
-        var modules = this._allowed_actions.map(function (perm_code) {
+        const modules = this._allowed_actions.map(function (perm_code) {
             return perm_code.substring(0, perm_code.indexOf("-"));      
         });
-        umodules = [...new Set(modules)];
+        const umodules = [...new Set(modules)];
         return umodules;
     },
     issuedAt: function(){
