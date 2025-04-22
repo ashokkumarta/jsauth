@@ -66,6 +66,12 @@ var user = {
         });
         return pages;
     },
+    allowedModules: function(){
+        var modules = this._allowed_actions.map(function (perm_code) {
+            return perm_code.substring(0, perm_code.firstIndexOf("-"));      
+        });
+        return modules;
+    },
     issuedAt: function(){
         return this._iat;
     },
