@@ -64,13 +64,15 @@ var user = {
         var pages = this._allowed_actions.map(function (perm_code) {
             return perm_code.substring(0, perm_code.lastIndexOf("-"));      
         });
-        return pages;
+        upages = [...new Set(pages)];
+        return upages;
     },
     allowedModules: function(){
         var modules = this._allowed_actions.map(function (perm_code) {
             return perm_code.substring(0, perm_code.indexOf("-"));      
         });
-        return modules;
+        umodules = [...new Set(modules)];
+        return umodules;
     },
     issuedAt: function(){
         return this._iat;
