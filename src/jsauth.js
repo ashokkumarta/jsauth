@@ -68,7 +68,7 @@ var user = {
     },
     allowedModules: function(){
         var modules = this._allowed_actions.map(function (perm_code) {
-            return perm_code.substring(0, perm_code.firstIndexOf("-"));      
+            return perm_code.substring(0, perm_code.indexOf("-"));      
         });
         return modules;
     },
