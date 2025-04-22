@@ -1,6 +1,9 @@
 {
   "name": "jsauth",
   "version": "0.0.1",
+  "main": "src/jsauth.js",
+  "browser": "src/jsauth.js",
+  "module": "src/jsauth.js",
   "dependencies": {
   },
   "devDependencies": {
