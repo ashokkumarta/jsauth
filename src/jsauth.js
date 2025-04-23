@@ -61,15 +61,28 @@ var user = {
         return this._allowed_data;
     },
     allowedPages: function(){
-        const pages = this._allowed_actions.map(function (perm_code) {
-            return perm_code.substring(0, perm_code.lastIndexOf("-"));      
+        const entities = this._allowed_actions.map(function (perm_code) {
+            return perm_code.substring(0, perm_code.lastIndexOf("-"));
         });
+        const pages = entities.filter(entity =>
+            entity.includes("-P-")
+        );
         const upages = [...new Set(pages)];
         return upages;
     },
+    allowedApis: function(){
+        const entities = this._allowed_actions.map(function (perm_code) {
+            return perm_code.substring(0, perm_code.lastIndexOf("-"));
+        });
+        const apis = entities.filter(entity =>
+            entity.includes("-API-")
+        );
+        const uapis = [...new Set(apis)];
+        return uapis;
+    },
     allowedModules: function(){
         const modules = this._allowed_actions.map(function (perm_code) {
-            return perm_code.substring(0, perm_code.indexOf("-"));      
+            return perm_code.substring(0, perm_code.indexOf("-"));
         });
         const umodules = [...new Set(modules)];
         return umodules;
