@@ -52,10 +52,10 @@ var user = {
 
     process: function(){
         if (this._crypt) {
-            cvals = this._crypt.split(":");
+            var cvals = this._crypt.split(":");
             if (cvals[0] == CRYPT_ALGORITHM_VALUE) {
                 if (supported(cvals[1], cvals[2])) {
-                    this._allowed_actions = decrypt(cvals[2], cvals[3]);
+                    this._allowed_actions = decrypt(cvals[2], this._allowed_actions);
                 }
             } 
         }
@@ -162,12 +162,12 @@ function supported(permsVer, permsHash) {
     if (master_versions.has(permsVer)) {
         return false;
     } 
-    load_permissions(permsVer)
+    load_permissions(permsVer, permsHash)
     return master_permissions.has(permsHash);
 }
 
-const load_permissions = (permVer) => {
-    fullUrl = PERMS_BASE_URL + (permVer ? `_${permVer}` : '') + PERMS_EXT
+const load_permissions = (permVer, permsHash) => {
+    var fullUrl = PERMS_BASE_URL + (permVer ? `_${permVer}` : '') + PERMS_EXT
     master_versions.add(permVer)
 
     // Synchronous request to fetch permissions list
@@ -176,7 +176,6 @@ const load_permissions = (permVer) => {
     xhr.send();
     if (xhr.status === 200) {
         var perms = xhr.responseText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-        var permsHash = String(hash(perms.join('')));
         master_permissions.set(permsHash, perms);
     } else {
         console.error(`Failed to load permissions from ${fullUrl}: ${xhr.statusText}`);
@@ -189,7 +188,8 @@ function decrypt(permsHash, base64BitMap) {
     var allowed_actions = [];
     for (var i = 0; i < perms.length; i++) {
         var byteIndex = Math.floor(i / 8);
-        var bitIndex = i % 8;
+        var bitIndex = (i) % 8;
+        bitIndex = 7 - bitIndex; // Reverse bit order for correct mapping
         if (byteIndex < decoded_bytes.length) {
             var byte = decoded_bytes[byteIndex];
             if ((byte & (1 << bitIndex)) !== 0) {
