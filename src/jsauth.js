@@ -13,6 +13,9 @@ const JTI_KEY = "jti";
 
 const AUTHZ_MODEL = 'IMPLIED';
 
+const CRYPT_ALGORITHM_VALUE = "bit_map"
+const CRYPT_KEY = "crypt"
+
 var unverified = {};
 var ct = Date.now()/1000;
 
@@ -45,6 +48,19 @@ var user = {
     _iat: unverified[ISSUED_AT_KEY],
     _exp: unverified[EXPIRES_AT_KEY],
     _jti: unverified[JTI_KEY],
+    _crypt: unverified[CRYPT_KEY],
+
+    process: function(){
+        if (this._crypt) {
+            cvals = this._crypt.split(":");
+            if (cvals[0] == CRYPT_ALGORITHM_VALUE) {
+                if (supported(cvals[1], cvals[2])) {
+                    this._allowed_actions = decrypt(cvals[2], cvals[3]);
+                }
+            } 
+        }
+    },
+
     id: function(){
       return this._id;
     },
@@ -127,7 +143,71 @@ var user = {
     },
 
 }
+// Process user permissions
+user.process();
 
 return user;
 }
+
+const PERMS_BASE_URL = "https://raw.githubusercontent.com/SMRFT/Login_security_backend/refs/heads/release/auth/permissions_master"
+const PERMS_EXT = ".lst"
+
+var master_permissions = new Map();
+var master_versions = new Set();
+
+function supported(permsVer, permsHash) {
+    if (master_permissions.has(permsHash)) {
+        return true;
+    }
+    if (master_versions.has(permsVer)) {
+        return false;
+    } 
+    load_permissions(permsVer)
+    return master_permissions.has(permsHash);
+}
+
+const load_permissions = (permVer) => {
+    fullUrl = PERMS_BASE_URL + (permVer ? `_${permVer}` : '') + PERMS_EXT
+    master_versions.add(permVer)
+
+    // Synchronous request to fetch permissions list
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", fullUrl, false);
+    xhr.send();
+    if (xhr.status === 200) {
+        var perms = xhr.responseText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+        var permsHash = String(hash(perms.join('')));
+        master_permissions.set(permsHash, perms);
+    } else {
+        console.error(`Failed to load permissions from ${fullUrl}: ${xhr.statusText}`);
+    }
+}
+
+function decrypt(permsHash, base64BitMap) {
+    const decoded_bytes = base64ToBytes(base64BitMap);
+    const perms = master_permissions.get(permsHash);
+    var allowed_actions = [];
+    for (var i = 0; i < perms.length; i++) {
+        var byteIndex = Math.floor(i / 8);
+        var bitIndex = i % 8;
+        if (byteIndex < decoded_bytes.length) {
+            var byte = decoded_bytes[byteIndex];
+            if ((byte & (1 << bitIndex)) !== 0) {
+                allowed_actions.push(perms[i]);
+            }
+        }
+    }
+    return allowed_actions;
+}
+
+const base64ToBytes = (b64) => {
+    // Decode the Base64 string to a raw binary string
+    const binaryString = atob(b64); 
+    // Create a Uint8Array from the binary string's character codes
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+};
 
