@@ -1,6 +1,6 @@
 {
   "name": "jsauth",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "main": "src/jsauth.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -8,5 +8,5 @@
   "keywords": ["jsauth"],
   "author": "Ashokkumar T.A",
   "license": "ISC",
-  "description": "Enfore simple access control for react application"
+  "description": "Enforce simple access control for react application"
 }
