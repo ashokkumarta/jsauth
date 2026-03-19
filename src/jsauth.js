@@ -51,7 +51,6 @@ var user = {
     _crypt: unverified[CRYPT_KEY],
 
     process: function(){
-        console.log("Processing permissoins bitmap");
         if (this._crypt) {
             var cvals = this._crypt.split(":");
             if (cvals[0] == CRYPT_ALGORITHM_VALUE) {
@@ -98,7 +97,6 @@ var user = {
         return uapis;
     },
     allowedModules: function(){
-        console.log("Processing allowedModules with: ", this._allowed_actions);
         const modules = this._allowed_actions.map(function (perm_code) {
             return perm_code.substring(0, perm_code.indexOf("-"));
         });
@@ -185,7 +183,6 @@ const load_permissions = (permVer, permsHash) => {
 }
 
 function decrypt(permsHash, base64BitMap) {
-    console.log("Decrypting permissions");
     const decoded_bytes = base64ToBytes(base64BitMap);
     const perms = master_permissions.get(permsHash);
     var allowed_actions = [];
@@ -200,7 +197,6 @@ function decrypt(permsHash, base64BitMap) {
             }
         }
     }
-    console.log("Returning allowed_actions from decrypt: ",allowed_actions);
     return allowed_actions;
 }
 
