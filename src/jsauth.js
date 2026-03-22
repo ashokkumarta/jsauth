@@ -53,9 +53,9 @@ var user = {
     process: function(){
         if (this._crypt) {
             var cvals = this._crypt.split(":");
-            if (cvals[0] == CRYPT_ALGORITHM_VALUE) {
-                if (supported(cvals[1], cvals[2])) {
-                    this._allowed_actions = decrypt(cvals[2], this._allowed_actions);
+            if (cvals[1] == CRYPT_ALGORITHM_VALUE) {
+                if (supported(cvals[0], cvals[2], cvals[3])) {
+                    this._allowed_actions = decrypt(cvals[0], cvals[2], this._allowed_actions);
                 }
             } 
         }
@@ -149,26 +149,29 @@ user.process();
 return user;
 }
 
-const PERMS_BASE_URL = "https://raw.githubusercontent.com/SMRFT/Login_security_backend/refs/heads/release/auth/permissions_master"
+const PERMS_BASE_URL = "https://raw.githubusercontent.com/SMRFT/Permissions_master/refs/heads/"
+PERMS_BASE_PATH = "/auth/permissions_master"
 const PERMS_EXT = ".lst"
 
 var master_permissions = new Map();
 var master_versions = new Set();
 
-function supported(permsVer, permsHash) {
-    if (master_permissions.has(permsHash)) {
+function supported(env, permsVer, permsHash) {
+    permsKey = env + "_" + permsHash
+    if (master_permissions.has(permsKey)) {
         return true;
     }
-    if (master_versions.has(permsVer)) {
+    if (master_versions.has(permsKey)) {
         return false;
     } 
-    load_permissions(permsVer, permsHash)
-    return master_permissions.has(permsHash);
+    load_permissions(env, permsVer, permsHash)
+    return master_permissions.has(permsKey);
 }
 
-const load_permissions = (permVer, permsHash) => {
-    var fullUrl = PERMS_BASE_URL + (permVer ? `_${permVer}` : '') + PERMS_EXT
-    master_versions.add(permVer)
+const load_permissions = (env, permVer, permsHash) => {
+    permsKey = env + "_" + permsHash
+    var fullUrl = PERMS_BASE_URL + env + PERMS_BASE_PATH + (permVer ? `_${permVer}` : '') + PERMS_EXT
+    master_versions.add(permsKey)
 
     // Synchronous request to fetch permissions list
     var xhr = new XMLHttpRequest();
@@ -176,15 +179,16 @@ const load_permissions = (permVer, permsHash) => {
     xhr.send();
     if (xhr.status === 200) {
         var perms = xhr.responseText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-        master_permissions.set(permsHash, perms);
+        master_permissions.set(permsKey, perms);
     } else {
         console.error(`Failed to load permissions from ${fullUrl}: ${xhr.statusText}`);
     }
 }
 
-function decrypt(permsHash, base64BitMap) {
+function decrypt(env, permsHash, base64BitMap) {
     const decoded_bytes = base64ToBytes(base64BitMap);
-    const perms = master_permissions.get(permsHash);
+    permsKey = env + "_" + permsHash
+    const perms = master_permissions.get(permsKey);
     var allowed_actions = [];
     for (var i = 0; i < perms.length; i++) {
         var byteIndex = Math.floor(i / 8);
