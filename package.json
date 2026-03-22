@@ -1,6 +1,6 @@
 {
   "name": "jsauth",
-  "version": "1.1.2",
+  "version": "1.1.7",
   "main": "src/jsauth.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

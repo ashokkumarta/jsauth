@@ -55,7 +55,7 @@ var user = {
             var cvals = this._crypt.split(":");
             if (cvals[1] == CRYPT_ALGORITHM_VALUE) {
                 if (supported(cvals[0], cvals[2], cvals[3])) {
-                    this._allowed_actions = decrypt(cvals[0], cvals[2], this._allowed_actions);
+                    this._allowed_actions = decrypt(cvals[0], cvals[3], this._allowed_actions);
                 }
             } 
         }
@@ -150,14 +150,14 @@ return user;
 }
 
 const PERMS_BASE_URL = "https://raw.githubusercontent.com/SMRFT/Permissions_master/refs/heads/"
-PERMS_BASE_PATH = "/auth/permissions_master"
+const PERMS_BASE_PATH = "/auth/permissions_master"
 const PERMS_EXT = ".lst"
 
 var master_permissions = new Map();
 var master_versions = new Set();
 
 function supported(env, permsVer, permsHash) {
-    permsKey = env + "_" + permsHash
+    const permsKey = env + "_" + permsHash
     if (master_permissions.has(permsKey)) {
         return true;
     }
@@ -169,7 +169,7 @@ function supported(env, permsVer, permsHash) {
 }
 
 const load_permissions = (env, permVer, permsHash) => {
-    permsKey = env + "_" + permsHash
+    const permsKey = env + "_" + permsHash
     var fullUrl = PERMS_BASE_URL + env + PERMS_BASE_PATH + (permVer ? `_${permVer}` : '') + PERMS_EXT
     master_versions.add(permsKey)
 
@@ -187,7 +187,7 @@ const load_permissions = (env, permVer, permsHash) => {
 
 function decrypt(env, permsHash, base64BitMap) {
     const decoded_bytes = base64ToBytes(base64BitMap);
-    permsKey = env + "_" + permsHash
+    const permsKey = env + "_" + permsHash
     const perms = master_permissions.get(permsKey);
     var allowed_actions = [];
     for (var i = 0; i < perms.length; i++) {
