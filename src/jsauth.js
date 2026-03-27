@@ -147,6 +147,11 @@ var user = {
         return true;
     },
     checkOutletAccess: function(outlet_code){
+
+        if (!this._allowed_outlets || this._allowed_outlets.length === 0) {
+            return false;
+        }
+
         if (!this._allowed_outlets.includes(outlet_code)) {
             return false;
         }
