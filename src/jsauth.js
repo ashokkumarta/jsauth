@@ -9,6 +9,7 @@ const EMAIL_KEY = "email";
 const NAME_KEY = "name";
 const ALLOWED_ACTIONS_KEY = "allowed-actions";
 const ALLOWED_DATA_KEY = "allowed-data";
+const ALLOWED_OUTLETS_KEY = "allowed-outlets";
 const JTI_KEY = "jti";
 
 const AUTHZ_MODEL = 'IMPLIED';
@@ -45,6 +46,7 @@ var user = {
     _name: unverified[NAME_KEY],
     _allowed_actions: unverified[ALLOWED_ACTIONS_KEY],
     _allowed_data: unverified[ALLOWED_DATA_KEY],
+    _allowed_outlets: unverified[ALLOWED_OUTLETS_KEY],
     _iat: unverified[ISSUED_AT_KEY],
     _exp: unverified[EXPIRES_AT_KEY],
     _jti: unverified[JTI_KEY],
@@ -75,6 +77,9 @@ var user = {
     },
     allowedData: function(){
         return this._allowed_data;
+    },
+    allowedOutlets: function(){
+        return this._allowed_outlets;
     },
     allowedPages: function(){
         const entities = this._allowed_actions.map(function (perm_code) {
@@ -137,6 +142,12 @@ var user = {
     },
     checkDataAccess: function(data_code){
         if (!this._allowed_data.includes(data_code)) {
+            return false;
+        }
+        return true;
+    },
+    checkOutletAccess: function(outlet_code){
+        if (!this._allowed_outlets.includes(outlet_code)) {
             return false;
         }
         return true;
